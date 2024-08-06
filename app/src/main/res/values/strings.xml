@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">WeeklyTodoList</string>
+    <string name="task_detail">TaskDetail</string>
+
+    <string-array name="day_of_the_week">
+        <item name="mon_day">Monday</item>
+        <item name="mon_day">Tuesday</item>
+        <item name="mon_day">Wednesday</item>
+        <item name="mon_day">Thursday</item>
+        <item name="mon_day">Friday</item>
+        <item name="mon_day">Saturday</item>
+        <item name="mon_day">Sunday</item>
+    </string-array>
+
+</resources>
