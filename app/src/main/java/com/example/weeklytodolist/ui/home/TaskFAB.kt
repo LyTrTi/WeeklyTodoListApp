@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.fragment
+package com.example.weeklytodolist.ui.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -11,11 +11,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TaskActionButtonFragment(
+fun TaskFAB(
     modifier: Modifier = Modifier,
+    onClicked: () -> Unit,
     imageVector: ImageVector
 ) {
-    FloatingActionButton(modifier = modifier, onClick = { /*TODO*/ }) {
+    FloatingActionButton(modifier = modifier, onClick = { onClicked() }) {
         Icon(imageVector = imageVector, contentDescription = null)
     }
 }
@@ -24,6 +25,6 @@ fun TaskActionButtonFragment(
 @Composable
 fun PreviewTaskActionButtonFragment() {
     Surface {
-         TaskActionButtonFragment(imageVector = Icons.Filled.Edit)
+         TaskFAB(imageVector = Icons.Filled.Edit, onClicked = {})
     }
 }

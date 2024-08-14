@@ -12,10 +12,4 @@ data class Task (
     var done: Boolean = false,
     val achieve: Boolean = false,
     val description: String,
-) {
-    companion object {
-        fun create(name: String = "", description: String = ""): Task {
-            return Task(name = name, description = description)
-        }
-    }
-}
+)

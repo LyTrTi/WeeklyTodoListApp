@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.fragment.content.detail
+package com.example.weeklytodolist.ui.task
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,12 +22,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
-import com.example.weeklytodolist.ui.fragment.TaskActionButtonFragment
+import com.example.weeklytodolist.ui.home.TaskFAB
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
 import com.example.weeklytodolist.viewModel.TaskViewModel
 
@@ -35,7 +34,7 @@ object TaskDetailDestination: NavigationDestination {
     override val route: String = "detail"
     override val titleRes: Int = R.string.task_detail
     var taskIdArg = "task_id"
-    val routeWithArg = "${route}/${taskIdArg}"
+    val routeWithArg = "$route/$taskIdArg"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,14 +44,14 @@ fun TaskDetailScreen(
     currentTaskId: Int,
     taskViewModel: TaskViewModel = viewModel(factory = TaskViewModel.factory)
 ) {
-    val currentTask = taskViewModel.currentListTask.find { it.id == currentTaskId }!!
+    //TODO: Bottom sheet scaffold
+//    val currentTask = taskViewModel.currentTab.currentList.find { it.id == currentTaskId }!!
     Scaffold(topBar = { TaskDetailTopBar(scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()) },
         floatingActionButton = {
-            TaskActionButtonFragment(imageVector = Icons.Filled.Edit)
+            TaskFAB(imageVector = Icons.Filled.Edit, onClicked = {})
         }) { innerPadding ->
         TaskDetailBody(
             modifier = Modifier.padding(horizontal = 16.dp),
-            currentTask = currentTask,
             contentPadding = innerPadding
         )
     }
@@ -75,19 +74,19 @@ fun TaskDetailTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 @Composable
 fun TaskDetailBody(
     modifier: Modifier = Modifier,
-    currentTask: Task,
+    currentTask: Task? = null,
     contentPadding: PaddingValues
 ) {
     Column(
         modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = currentTask.name, style = MaterialTheme.typography.headlineMedium)
+            Text(text = currentTask!!.name, style = MaterialTheme.typography.headlineMedium)
             IconButton(onClick = { /*TODO: Show dialog add if user want to achieve this task*/ }) {
                 Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null)
             }
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 2.dp)
-        Text(text = currentTask.description, style = MaterialTheme.typography.bodyMedium)
+        Text(text = currentTask!!.description, style = MaterialTheme.typography.bodyMedium)
     }
 }

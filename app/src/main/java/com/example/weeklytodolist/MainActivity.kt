@@ -9,6 +9,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import com.example.weeklytodolist.data.TaskDatabase
 import com.example.weeklytodolist.ui.theme.WeeklyTodoListTheme
 
 class MainActivity : ComponentActivity() {

@@ -1,5 +1,6 @@
-package com.example.weeklytodolist.ui.fragment.content.home
+package com.example.weeklytodolist.ui.task
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -28,19 +29,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.model.Task
+import com.example.weeklytodolist.ui.home.TabState
+import com.example.weeklytodolist.viewModel.TaskViewModel
 
 @Composable
 fun TaskListFragment(
     modifier: Modifier = Modifier,
-    listTask: List<Task>,
+    listTasks: List<Task>,
     onDoneClicked: (Task) -> Unit,
     onCardClicked: (Task) -> Unit
 ) {
+    Log.d("DEBUG: TaskListFragment", listTasks.toString())
     LazyColumn(
         modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        items(items = listTask, key = { task -> task.id }) {
+        items(items = listTasks, key = { task -> task.id }) {
             TaskItem(it, onDoneClicked, onCardClicked)
         }
     }
@@ -54,10 +59,10 @@ fun TaskItem(
 ) {
     //TODO: Replace by Checkboxes icon, use painterResources
     var isChecked by remember {
-        mutableStateOf(false)
+        mutableStateOf(task.done)
     }
 
-    var iconForNow: ImageVector =
+    val iconForNow: ImageVector =
         if (isChecked) Icons.Default.Favorite else Icons.Default.FavoriteBorder
 
     Card(
@@ -86,7 +91,7 @@ fun TaskItem(
                 }
             }
             Text(
-                modifier =  Modifier
+                modifier = Modifier
                     .height(24.dp),
                 text = task.description,
                 overflow = TextOverflow.Ellipsis

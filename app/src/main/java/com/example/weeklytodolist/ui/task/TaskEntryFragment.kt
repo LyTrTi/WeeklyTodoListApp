@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.weeklytodolist.ui.fragment.content.home
+package com.example.weeklytodolist.ui.task
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,18 +21,25 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weeklytodolist.ui.ViewModelProvider
+import com.example.weeklytodolist.viewModel.TaskViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskEntryFragment(
     modifier: Modifier,
+    viewModel: TaskEntryViewModel = viewModel(factory = ViewModelProvider.Factory),
     headerTitle: String,
     scaffoldState: BottomSheetScaffoldState,
-    onSaveClicked: (String, String) -> Unit,
-    onCancelClicked: () -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
     content: @Composable () -> Unit
 ) {
     //TODO: Replace by Bottom Sheet Scaffold
@@ -44,8 +51,12 @@ fun TaskEntryFragment(
             Column {
                 TaskEntryHeader(title = headerTitle)
                 TaskEntryBody(
-                    onCancelClicked = onCancelClicked,
-                    onSaveClicked = onSaveClicked
+                    onCancelClicked = {
+                        scope.launch { scaffoldState.bottomSheetState.hide() }
+                    },
+                    onSaveClicked = {
+                        viewModel.insertTask()
+                    }
                 )
             }
         }
@@ -57,7 +68,8 @@ fun TaskEntryFragment(
 @Composable
 fun TaskEntryBody(
     modifier: Modifier = Modifier,
-    onSaveClicked: (String, String) -> Unit,
+    taskViewModel: TaskEntryViewModel = viewModel(factory = TaskViewModel.factory),
+    onSaveClicked: () -> Unit,
     onCancelClicked: () -> Unit
 ) {
     Column(
@@ -66,27 +78,18 @@ fun TaskEntryBody(
             horizontal = 16.dp
         )
     ) {
-        InputTextRow(
+        InputTextBody(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            placeholder = "Name",
-            onValueChange = {}
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        InputTextRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-                .height(128.dp),
-            placeholder = "Name",
-            onValueChange = {}
+            task = taskViewModel.taskInfo,
+            onValueChange = { taskViewModel.taskInfo = it }
         )
 
         ButtonRow(
             modifier = Modifier.fillMaxWidth(),
-            onSaveClicked = { name, description ->
-                onSaveClicked(name, description)
+            onSaveClicked = {
+                onSaveClicked()
             },
             onCancelClicked = { onCancelClicked() }
         )
@@ -106,24 +109,38 @@ fun TaskEntryHeader(
 }
 
 @Composable
-fun InputTextRow(
+fun InputTextBody(
     modifier: Modifier = Modifier,
-    placeholder: String,
-    onValueChange: (String) -> Unit
+    task: TaskDetails,
+    onValueChange: (TaskDetails) -> Unit
 ) {
-    OutlinedTextField(
-        modifier = modifier,
-        value = "",
-        onValueChange = { onValueChange(it) },
-        placeholder = { Text(text = placeholder) },
-        shape = RoundedCornerShape(16.dp),
-    )
+    Column {
+        OutlinedTextField(
+            modifier = modifier,
+            value = task.name,
+            onValueChange = { newName ->
+                onValueChange(task.copy(name = newName))
+            },
+            placeholder = { Text(text = "Name") },
+            shape = RoundedCornerShape(16.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            modifier = modifier.height(124.dp),
+            value = task.description,
+            onValueChange = { newDesc ->
+                onValueChange(task.copy(description = newDesc))
+            },
+            placeholder = { Text(text = "Description") },
+            shape = RoundedCornerShape(16.dp),
+        )
+    }
 }
 
 @Composable
 fun ButtonRow(
     modifier: Modifier = Modifier,
-    onSaveClicked: (String, String) -> Unit,
+    onSaveClicked: () -> Unit,
     onCancelClicked: () -> Unit
 ) {
     Row(
@@ -133,11 +150,11 @@ fun ButtonRow(
         horizontalArrangement = Arrangement.End
     ) {
         // TODO:
-        Button(onClick = { onSaveClicked("", "") }, enabled = false) {
+        Button(onClick = { onCancelClicked() }) {
             Text(text = "Cancel")
         }
         Spacer(modifier = Modifier.width(8.dp))
-        Button(onClick = { onCancelClicked() }) {
+        Button(onClick = { onSaveClicked() }) {
             Text(text = "Summit")
         }
     }
@@ -153,9 +170,9 @@ fun PreviewTaskEntryHeader() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewTaskEntryBody() {
-    TaskEntryBody(
-        onSaveClicked = { name, desc -> },
-        onCancelClicked = {}
+fun PreviewInputTextBody() {
+    InputTextBody(
+        task = TaskDetails(),
+        onValueChange = {}
     )
 }

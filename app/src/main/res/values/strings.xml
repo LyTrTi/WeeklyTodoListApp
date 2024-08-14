@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">WeeklyTodoList</string>
     <string name="task_detail">TaskDetail</string>
-
+    <string name="DefaultTask">Default</string>
+    <string name="DoneTask">Done</string>
+    <string name="AchieveTask">Achieve</string>
     <string-array name="day_of_the_week">
         <item name="mon_day">Monday</item>
         <item name="mon_day">Tuesday</item>

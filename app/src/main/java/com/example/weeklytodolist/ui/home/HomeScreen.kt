@@ -1,7 +1,8 @@
-package com.example.weeklytodolist.ui.fragment.content.home
+package com.example.weeklytodolist.ui.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,21 +11,20 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.weeklytodolist.R
-import com.example.weeklytodolist.ui.fragment.TaskActionButtonFragment
-import com.example.weeklytodolist.ui.fragment.content.detail.TaskDetailDestination
-import com.example.weeklytodolist.ui.fragment.navigationBar.BottomNavigation
+import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
-import com.example.weeklytodolist.viewModel.TaskViewModel
+import com.example.weeklytodolist.ui.task.TaskDetailDestination
+import com.example.weeklytodolist.ui.task.TaskEntryFragment
 import kotlinx.coroutines.launch
 
 object HomeDestination : NavigationDestination {
@@ -38,6 +38,8 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    homeUiState: HomeUiState,
+    homeScreenViewModel: HomeScreenViewModel = viewModel<HomeScreenViewModel>(factory = ViewModelProvider.Factory)
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -46,20 +48,10 @@ fun HomeScreen(
         )
     )
     val scope = rememberCoroutineScope()
-    val taskViewModel: TaskViewModel = viewModel(factory = TaskViewModel.factory)
-
     TaskEntryFragment(
         modifier = modifier,
         headerTitle = "Add Task",
         scaffoldState = bottomSheetScaffoldState,
-        onSaveClicked = {name, desc ->
-            taskViewModel.insertTask(name, desc)
-        },
-        onCancelClicked = {
-            scope.launch {
-                bottomSheetScaffoldState.bottomSheetState.hide()
-            }
-        }
     ) {
         Scaffold(
             topBar = {
@@ -69,22 +61,39 @@ fun HomeScreen(
                         .padding(vertical = 4.dp, horizontal = 8.dp)
                 )
             },
-            bottomBar = { BottomNavigation(taskViewModel, modifier = Modifier.fillMaxWidth()) },
+            bottomBar = {
+                BottomNavigation(
+                    modifier = Modifier.fillMaxWidth(),
+                    homeUiState = homeUiState
+                )
+            },
             floatingActionButton = {
-                TaskActionButtonFragment(
-                    imageVector = Icons.Filled.Add
+                TaskFAB(
+                    imageVector = Icons.Filled.Add,
+                    onClicked = {
+                        scope.launch {
+                            bottomSheetScaffoldState.bottomSheetState.expand()
+                        }
+                    }
                 )
             }
         ) {
+            //TODO: implement loading screen using loading status in the homeUiState
             ContentFragment(
                 modifier = Modifier
                     .fillMaxSize(),
-                taskViewModel = taskViewModel,
                 contentPaddingValues = it,
                 onCardClicked = { task ->
                     navController.navigate("${TaskDetailDestination.route}/${task.id}")
                 }
             )
         }
+    }
+}
+
+@Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
+        Text(text = "Loading...")
     }
 }

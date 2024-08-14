@@ -4,5 +4,10 @@ import com.example.weeklytodolist.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
-    fun getAllTask(): Flow<List<Task>>
+    fun getAllTaskFlow(): Flow<List<Task>>
+    fun getTaskByIdFlow(taskId: Int): Flow<Task>
+    suspend fun getAllTask(): List<Task>
+    suspend fun getTaskById(taskId: Int): Task
+    suspend fun deleteTask(taskId: Int)
+    suspend fun modifyTable(task: Task)
 }

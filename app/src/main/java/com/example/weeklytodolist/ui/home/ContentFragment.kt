@@ -1,6 +1,7 @@
-package com.example.weeklytodolist.ui.fragment.content.home
+package com.example.weeklytodolist.ui.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,9 +10,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.model.Task
-import com.example.weeklytodolist.viewModel.TaskViewModel
+import com.example.weeklytodolist.ui.ViewModelProvider
+import com.example.weeklytodolist.ui.task.TaskListFragment
 
 //TODO: This function should have a navController argument
 //TODO: maybe also viewModel, or just a function to call when a task is set to done.
@@ -19,7 +21,7 @@ import com.example.weeklytodolist.viewModel.TaskViewModel
 @Composable
 fun ContentFragment(
     modifier: Modifier = Modifier,
-    taskViewModel: TaskViewModel,
+    homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory),
     contentPaddingValues: PaddingValues,
     onCardClicked: (Task) -> Unit,
 ) {
@@ -33,9 +35,10 @@ fun ContentFragment(
         HorizontalDivider()
         TaskListFragment(
             modifier = Modifier,
-            listTask = taskViewModel.currentListTask,
+            listTasks = homeScreenViewModel.tabState.currentList,
             onDoneClicked = {
-                taskViewModel.updateTaskState(it)
+                Log.d("DEBUG: ContentFragment", homeScreenViewModel.tabState.tab.name)
+                homeScreenViewModel.markAsDone(it)
             },
             onCardClicked = {
                 onCardClicked(it)

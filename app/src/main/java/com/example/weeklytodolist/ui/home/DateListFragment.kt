@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.fragment.content.home
+package com.example.weeklytodolist.ui.home
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -24,36 +24,6 @@ import com.example.weeklytodolist.model.Date
 fun DateListFragment(
     modifier:Modifier = Modifier
 ) {
-    val dayOfWeek = listOf(
-        Date(
-            id = 1,
-            name = "Monday"
-        ),
-        Date(
-            id = 2,
-            name = "Tuesday"
-        ),
-        Date(
-            id = 3,
-            name = "Wednesday"
-        ),
-        Date(
-            id = 4,
-            name = "Thursday"
-        ),
-        Date(
-            id = 5,
-            name = "Friday"
-        ),
-        Date(
-            id = 6,
-            name = "Saturday"
-        ),
-        Date(
-            id = 7,
-            name = "Sunday"
-        ),
-    )
     LazyRow(modifier = modifier) {
         items(items = dayOfWeek, key = { day -> day.id }) { day ->
             DateItem(day = day.name)
@@ -98,3 +68,34 @@ fun PreviewDateListFragment() {
         DateListFragment()
     }
 }
+
+private val dayOfWeek = listOf(
+    Date(
+        id = 1,
+        name = "Monday"
+    ),
+    Date(
+        id = 2,
+        name = "Tuesday"
+    ),
+    Date(
+        id = 3,
+        name = "Wednesday"
+    ),
+    Date(
+        id = 4,
+        name = "Thursday"
+    ),
+    Date(
+        id = 5,
+        name = "Friday"
+    ),
+    Date(
+        id = 6,
+        name = "Saturday"
+    ),
+    Date(
+        id = 7,
+        name = "Sunday"
+    ),
+)

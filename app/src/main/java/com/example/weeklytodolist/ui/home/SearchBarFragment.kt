@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.fragment.content.home
+package com.example.weeklytodolist.ui.home
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
