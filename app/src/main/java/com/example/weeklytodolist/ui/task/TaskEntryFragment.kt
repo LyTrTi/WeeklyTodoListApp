@@ -2,7 +2,6 @@
 
 package com.example.weeklytodolist.ui.task
 
-import android.view.WindowInsets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.viewModel.TaskViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +44,6 @@ fun TaskEntryFragment(
     content: @Composable () -> Unit
 ) {
     //TODO: Replace by Bottom Sheet Scaffold
-    val configuration = LocalConfiguration.current
     BottomSheetScaffold(
         modifier = modifier,
         scaffoldState = scaffoldState,
@@ -85,8 +83,8 @@ fun TaskEntryBody(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            task = taskViewModel.taskInfo,
-            onValueChange = { taskViewModel.taskInfo = it }
+            task = taskViewModel.newTask,
+            onValueChange = { taskViewModel.newTask = it }
         )
 
         ButtonRow(
@@ -114,8 +112,8 @@ fun TaskEntryHeader(
 @Composable
 fun InputTextBody(
     modifier: Modifier = Modifier,
-    task: TaskDetails,
-    onValueChange: (TaskDetails) -> Unit
+    task: Task,
+    onValueChange: (Task) -> Unit
 ) {
     Column {
         OutlinedTextField(
@@ -175,7 +173,7 @@ fun PreviewTaskEntryHeader() {
 @Composable
 fun PreviewInputTextBody() {
     InputTextBody(
-        task = TaskDetails(),
+        task = Task(name = "Test", description = "No more taskDetails"),
         onValueChange = {}
     )
 }

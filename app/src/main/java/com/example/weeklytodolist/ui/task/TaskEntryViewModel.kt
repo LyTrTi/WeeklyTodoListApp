@@ -1,6 +1,5 @@
 package com.example.weeklytodolist.ui.task
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,16 +10,14 @@ import com.example.weeklytodolist.model.Task
 import kotlinx.coroutines.launch
 
 class TaskEntryViewModel(private val taskRepository: TaskRepository): ViewModel() {
-    var taskInfo by mutableStateOf(TaskDetails())
+    var newTask by mutableStateOf(Task())
 
     fun insertTask() {
-        val task = taskInfo.toTask()
-
-        viewModelScope.launch { taskRepository.modifyTable(task) }
+        viewModelScope.launch { taskRepository.modifyTable(newTask) }
         resetTask()
     }
 
     private fun resetTask() {
-        taskInfo = taskInfo.copy(name = "", description = "")
+        newTask = newTask.copy(name = "", description = "")
     }
 }
