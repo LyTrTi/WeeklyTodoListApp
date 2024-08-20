@@ -15,43 +15,40 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.home.HomeDestination
 import com.example.weeklytodolist.ui.home.HomeScreen
 import com.example.weeklytodolist.ui.home.HomeScreenViewModel
 import com.example.weeklytodolist.ui.task.TaskDetailDestination
 import com.example.weeklytodolist.ui.task.TaskDetailScreen
+import com.example.weeklytodolist.ui.task.TaskDetailViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScreenNavHost(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController = rememberNavController()
 ) {
-
     NavHost(navController = navController, startDestination = HomeDestination.route) {
         composable(route = HomeDestination.route) {
-            val homeScreenViewModel: HomeScreenViewModel =
-                viewModel(factory = ViewModelProvider.Factory)
-            val homeUiState by homeScreenViewModel.homeUiState.collectAsState()
-
-//            LaunchedEffect(homeUiState) {
-//                Log.d("DEBUG: Trigger homeUiState", "AppNavGraph")
-//                homeScreenViewModel.tabChanged()
-//            }
-
             HomeScreen(
                 modifier = Modifier,
-                homeUiState = homeUiState,
                 navController = navController,
+                onCardClicked = { task ->
+                    Log.d("DETAIL:", "${TaskDetailDestination.route}/${task.id}")
+                    navController.navigate("${TaskDetailDestination.route}/${task.id}")
+                }
             )
         }
         composable(
             route = TaskDetailDestination.routeWithArg,
-            arguments = listOf(navArgument(TaskDetailDestination.taskIdArg) {
+            arguments = listOf(navArgument(TaskDetailDestination.TASK_ID_ARG) {
                 type = NavType.IntType
             })
         ) {
-            TaskDetailScreen(currentTaskId = 0)
+            TaskDetailScreen(
+                navController = navController
+            )
         }
     }
 }

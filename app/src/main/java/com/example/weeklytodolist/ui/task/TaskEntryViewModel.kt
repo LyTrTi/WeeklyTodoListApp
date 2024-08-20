@@ -24,12 +24,3 @@ class TaskEntryViewModel(private val taskRepository: TaskRepository): ViewModel(
         taskInfo = taskInfo.copy(name = "", description = "")
     }
 }
-
-data class TaskDetails(
-    var name: String = "",
-    var description: String = ""
-)
-
-fun TaskDetails.toTask(): Task {
-    return Task(name = name, description = description)
-}

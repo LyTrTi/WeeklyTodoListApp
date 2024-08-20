@@ -1,7 +1,6 @@
 package com.example.weeklytodolist.ui.home
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.lang.reflect.Type
 
 class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> =
@@ -40,13 +38,13 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
             homeUiState.collectLatest {
                 tabState = TabState(
                     currentList = when (tabState.tab) {
-                        TypeList.DEFAULT -> it.tasks.filter { task -> !(task.done || task.achieve) }
+                        TypeList.DEFAULT -> it.tasks.filter { task -> !(task.done || task.archive) }
                         TypeList.DONE -> it.tasks.filter { task -> task.done }
-                        TypeList.ACHIEVE -> it.tasks.filter { task -> task.done && task.achieve }
+                        TypeList.ARCHIVE -> it.tasks.filter { task -> task.done && task.archive }
                     },
                     tab = tabState.tab
                 )
-                Log.d("DEBUG: init viewmodel", tabState.tab.name)
+                Log.d("DEBUG: init viewmodel", tabState.currentList.toString())
             }
         }
     }
@@ -59,18 +57,18 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
                 tab = TypeList.DONE
             )
 
-            TypeList.ACHIEVE.name -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> task.done && task.achieve },
-                tab = TypeList.ACHIEVE
+            TypeList.ARCHIVE.name -> tabState.copy(
+                currentList = homeUiState.value.tasks.filter { task -> task.done && task.archive },
+                tab = TypeList.ARCHIVE
             )
 
             TypeList.DEFAULT.name -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> !(task.done || task.achieve) },
+                currentList = homeUiState.value.tasks.filter { task -> !(task.done || task.archive) },
                 tab = TypeList.DEFAULT
             )
 
             else -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> !(task.done || task.achieve) },
+                currentList = homeUiState.value.tasks.filter { task -> !(task.done || task.archive) },
                 tab = TypeList.DEFAULT
             )
         }
@@ -113,5 +111,5 @@ data class TabState(
 )
 
 enum class TypeList {
-    DEFAULT, ACHIEVE, DONE
+    DEFAULT, ARCHIVE, DONE
 }

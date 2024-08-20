@@ -1,69 +1,105 @@
 package com.example.weeklytodolist.ui.task
 
-import androidx.compose.foundation.layout.Arrangement
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.weeklytodolist.R
-import com.example.weeklytodolist.model.Task
+import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.home.TaskFAB
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
-import com.example.weeklytodolist.viewModel.TaskViewModel
+import kotlinx.coroutines.launch
 
-object TaskDetailDestination: NavigationDestination {
+private val TAG = "DETAIL:"
+
+object TaskDetailDestination : NavigationDestination {
     override val route: String = "detail"
     override val titleRes: Int = R.string.task_detail
-    var taskIdArg = "task_id"
-    val routeWithArg = "$route/$taskIdArg"
+    const val TASK_ID_ARG = "task_id"
+    val routeWithArg = "$route/{$TASK_ID_ARG}" // detail/task_id
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
-    currentTaskId: Int,
-    taskViewModel: TaskViewModel = viewModel(factory = TaskViewModel.factory)
+    navController: NavController,
+    taskDetailsViewModel: TaskDetailViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
-    //TODO: Bottom sheet scaffold
-//    val currentTask = taskViewModel.currentTab.currentList.find { it.id == currentTaskId }!!
-    Scaffold(topBar = { TaskDetailTopBar(scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()) },
-        floatingActionButton = {
-            TaskFAB(imageVector = Icons.Filled.Edit, onClicked = {})
-        }) { innerPadding ->
-        TaskDetailBody(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            contentPadding = innerPadding
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false
         )
+    )
+    val scope = rememberCoroutineScope()
+    val uiState = taskDetailsViewModel.uiState.collectAsState()
+    Log.d(TAG, "TaskDetailScreen: ${uiState.value.name}")
+    //TODO: Bottom sheet scaffold
+    TaskEntryFragment(
+        modifier = Modifier,
+        headerTitle = stringResource(id = R.string.EditTask),
+        scaffoldState = bottomSheetScaffoldState,
+        scope = scope,
+    ) {
+        Scaffold(
+            topBar = {
+                TaskDetailTopBar(
+                    scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                    title = uiState.value.name,
+                    onBackButton = { navController.navigateUp() }
+                )
+            },
+            floatingActionButton = {
+                TaskFAB(
+                    imageVector = Icons.Filled.KeyboardArrowUp,
+                    onClicked = {
+                        scope.launch {
+                            bottomSheetScaffoldState.bottomSheetState.show()
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            TaskDetailBody(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                currentTask = uiState.value,
+                contentPadding = innerPadding
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskDetailTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+fun TaskDetailTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, onBackButton: () -> Unit) {
     CenterAlignedTopAppBar(
-        title = { Text(text = "Task's Details") },
+        title = { Text(text = title) },
         navigationIcon = {
-            IconButton(onClick = { /*TODO: Navigate up*/ }) {
+            IconButton(onClick = { onBackButton() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
             }
         },
@@ -74,19 +110,12 @@ fun TaskDetailTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 @Composable
 fun TaskDetailBody(
     modifier: Modifier = Modifier,
-    currentTask: Task? = null,
+    currentTask: TaskDetails,
     contentPadding: PaddingValues
 ) {
     Column(
         modifier = modifier.padding(top = contentPadding.calculateTopPadding()),
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = currentTask!!.name, style = MaterialTheme.typography.headlineMedium)
-            IconButton(onClick = { /*TODO: Show dialog add if user want to achieve this task*/ }) {
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null)
-            }
-        }
-        HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 2.dp)
-        Text(text = currentTask!!.description, style = MaterialTheme.typography.bodyMedium)
+        Text(text = currentTask.description, style = MaterialTheme.typography.bodyMedium)
     }
 }

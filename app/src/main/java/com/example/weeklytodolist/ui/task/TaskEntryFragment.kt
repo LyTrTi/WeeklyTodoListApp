@@ -2,6 +2,7 @@
 
 package com.example.weeklytodolist.ui.task
 
+import android.view.WindowInsets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +45,7 @@ fun TaskEntryFragment(
     content: @Composable () -> Unit
 ) {
     //TODO: Replace by Bottom Sheet Scaffold
+    val configuration = LocalConfiguration.current
     BottomSheetScaffold(
         modifier = modifier,
         scaffoldState = scaffoldState,

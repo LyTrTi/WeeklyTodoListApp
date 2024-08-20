@@ -15,15 +15,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.weeklytodolist.R
+import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
-import com.example.weeklytodolist.ui.task.TaskDetailDestination
 import com.example.weeklytodolist.ui.task.TaskEntryFragment
 import kotlinx.coroutines.launch
 
@@ -38,9 +40,11 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    homeUiState: HomeUiState,
-    homeScreenViewModel: HomeScreenViewModel = viewModel<HomeScreenViewModel>(factory = ViewModelProvider.Factory)
+    onCardClicked: (Task) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
+    val homeUiState by homeScreenViewModel.homeUiState.collectAsState()
+
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
             initialValue = SheetValue.Hidden,
@@ -84,7 +88,7 @@ fun HomeScreen(
                     .fillMaxSize(),
                 contentPaddingValues = it,
                 onCardClicked = { task ->
-                    navController.navigate("${TaskDetailDestination.route}/${task.id}")
+                    onCardClicked(task)
                 }
             )
         }

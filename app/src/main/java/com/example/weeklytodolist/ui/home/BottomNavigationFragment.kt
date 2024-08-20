@@ -44,11 +44,11 @@ fun BottomNavigation(
             }
         )
         NavigationTab(
-            title = stringResource(id = R.string.AchieveTask),
+            title = stringResource(id = R.string.ArchiveTask),
             icon = Icons.Default.Star,
             tabState = homeScreenViewModel.tabState,
             onClick = {
-                homeScreenViewModel.tabChanged(TypeList.ACHIEVE.name)
+                homeScreenViewModel.tabChanged(TypeList.ARCHIVE.name)
             }
         )
         NavigationTab(
