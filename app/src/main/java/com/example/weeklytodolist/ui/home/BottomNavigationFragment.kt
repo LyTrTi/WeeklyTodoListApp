@@ -1,6 +1,5 @@
 package com.example.weeklytodolist.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,14 +10,12 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.R
@@ -38,7 +35,7 @@ fun BottomNavigation(
         NavigationTab(
             title = stringResource(id = R.string.DefaultTask),
             icon = Icons.Default.Menu,
-            tabState = homeScreenViewModel.tabState,
+            taskListState = homeScreenViewModel.taskListState,
             onClick = {
                 homeScreenViewModel.tabChanged(TypeList.DEFAULT.name)
             }
@@ -46,7 +43,7 @@ fun BottomNavigation(
         NavigationTab(
             title = stringResource(id = R.string.ArchiveTask),
             icon = Icons.Default.Star,
-            tabState = homeScreenViewModel.tabState,
+            taskListState = homeScreenViewModel.taskListState,
             onClick = {
                 homeScreenViewModel.tabChanged(TypeList.ARCHIVE.name)
             }
@@ -54,7 +51,7 @@ fun BottomNavigation(
         NavigationTab(
             title = stringResource(id = R.string.DoneTask),
             icon = Icons.Default.Done,
-            tabState = homeScreenViewModel.tabState,
+            taskListState = homeScreenViewModel.taskListState,
             onClick = {
                 homeScreenViewModel.tabChanged(TypeList.DONE.name)
             }
@@ -65,7 +62,7 @@ fun BottomNavigation(
 @Composable
 private fun NavigationTab(
     modifier: Modifier = Modifier,
-    tabState: TabState,
+    taskListState: TaskListState,
     title: String,
     icon: ImageVector,
     onClick: () -> Unit

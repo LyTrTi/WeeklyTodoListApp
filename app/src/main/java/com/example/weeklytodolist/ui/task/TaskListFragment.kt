@@ -25,14 +25,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.model.Task
-import com.example.weeklytodolist.ui.home.TabState
-import com.example.weeklytodolist.viewModel.TaskViewModel
 
 @Composable
 fun TaskListFragment(
@@ -77,7 +75,8 @@ fun TaskItem(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = task.name,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
                 )
                 IconButton(
                     modifier = Modifier,

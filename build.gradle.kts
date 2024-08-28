@@ -4,7 +4,8 @@ buildscript {
 }
 
 plugins {
+    kotlin("jvm") version ("1.9.23")
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14" apply false
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17" apply false
 }

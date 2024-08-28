@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,16 +30,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
+import com.example.weeklytodolist.model.utils.getDate
 import com.example.weeklytodolist.ui.ViewModelProvider
+import com.example.weeklytodolist.ui.home.TaskFAB
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
-
-private val TAG = "DETAIL:"
+import kotlinx.coroutines.launch
 
 object TaskDetailDestination : NavigationDestination {
     override val route: String = "detail"
@@ -61,27 +65,65 @@ fun TaskDetailScreen(
         )
     )
     val scope = rememberCoroutineScope()
+
     val uiState = taskDetailsViewModel.uiState.collectAsState()
     Log.d("DETAIL: Viewmodel", uiState.value.toString())
 
-    Scaffold(
-        topBar = {
-            TaskDetailTopBar(
-                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-                title = uiState.value.name,
-                onBackButton = { navController.navigateUp() }
+    TaskEntryFragment(
+        modifier = Modifier,
+        headerTitle = "Edit Task",
+        currentTask = uiState.value,
+        scaffoldState = bottomSheetScaffoldState
+    ) {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                TaskDetailTopBar(
+                    scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                    title = uiState.value.name,
+                    onBackButton = { navController.navigateUp() }
+                )
+            },
+            floatingActionButton = {
+                TaskFAB(
+                    imageVector = Icons.Filled.Edit,
+                    onClicked = {
+                        scope.launch {
+                            bottomSheetScaffoldState.bottomSheetState.expand()
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            TaskDetailBody(
+                modifier = Modifier.padding(16.dp),
+                currentTask = uiState.value,
+                contentPadding = innerPadding,
+                onChecked = {
+                    taskDetailsViewModel.unDone()
+                }
             )
         }
-    ) { innerPadding ->
-        TaskDetailBody(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            currentTask = uiState.value,
-            contentPadding = innerPadding,
-            onCheckedChanged = {
-                taskDetailsViewModel.unDone()
-            }
-        )
     }
+//
+//    Scaffold(
+//        topBar = {
+//            TaskDetailTopBar(
+//                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+//                title = uiState.value.name,
+//                onBackButton = { navController.navigateUp() }
+//            )
+//        }
+//    ) { innerPadding ->
+//        TaskDetailBody(
+//            modifier = Modifier.padding(horizontal = 16.dp),
+//            currentTask = uiState.value,
+//            contentPadding = innerPadding,
+//            onChecked = {
+//                taskDetailsViewModel.unDone()
+//            }
+//        )
+//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,7 +137,7 @@ fun TaskDetailTopBar(
         title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = { onBackButton() }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
             }
         },
         scrollBehavior = scrollBehavior
@@ -107,29 +149,65 @@ fun TaskDetailBody(
     modifier: Modifier = Modifier,
     currentTask: Task,
     contentPadding: PaddingValues,
-    onCheckedChanged: () -> Unit
+    onChecked: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(top = contentPadding.calculateTopPadding()).padding(horizontal = 16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(top = contentPadding.calculateTopPadding())
+            .padding(horizontal = 16.dp),
     ) {
         Text(text = currentTask.name, style = MaterialTheme.typography.headlineMedium)
         HorizontalDivider()
-        Row(
+        RowAttribute(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            title = "Complete"
         ) {
-            Text(text = "Complete")
             Checkbox(
+                modifier = Modifier.weight(1f),
                 checked = currentTask.done, onCheckedChange = {
-                    onCheckedChanged()
+                    onChecked()
                 }
+            )
+        }
+        RowAttribute(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 14.dp),
+            title = "Date"
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                text = currentTask.getDate()
             )
         }
         HorizontalDivider()
         Text(text = currentTask.description, style = MaterialTheme.typography.bodyMedium)
     }
 }
+
+@Composable
+fun RowAttribute(
+    modifier: Modifier = Modifier,
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.W500
+        )
+        content()
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
@@ -140,6 +218,6 @@ fun PreviewTaskDetailBody() {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         ),
         contentPadding = PaddingValues(0.dp),
-        onCheckedChanged = {}
+        onChecked = {}
     )
 }

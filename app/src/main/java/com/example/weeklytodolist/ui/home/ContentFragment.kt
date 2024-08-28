@@ -31,13 +31,18 @@ fun ContentFragment(
             bottom = contentPaddingValues.calculateBottomPadding()
         )
     ) {
-        DateListFragment(modifier = Modifier.padding(8.dp))
+        DateListFragment(
+            modifier = Modifier.padding(8.dp),
+            onDateClicked = {
+                homeScreenViewModel.dayChanged(it)
+            }
+        )
         HorizontalDivider()
         TaskListFragment(
             modifier = Modifier,
-            listTasks = homeScreenViewModel.tabState.currentList,
+            listTasks = homeScreenViewModel.taskListState.currentList,
             onDoneClicked = {
-                Log.d("DEBUG: ContentFragment", homeScreenViewModel.tabState.tab.name)
+                Log.d("DEBUG: ContentFragment", homeScreenViewModel.taskListState.tab.name)
                 homeScreenViewModel.markAsDone(it)
             },
             onCardClicked = {

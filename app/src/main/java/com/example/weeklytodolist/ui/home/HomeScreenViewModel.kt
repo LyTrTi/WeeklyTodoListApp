@@ -8,6 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weeklytodolist.data.TaskRepository
 import com.example.weeklytodolist.model.Task
+import com.example.weeklytodolist.model.utils.DateFormatInfo
+import com.example.weeklytodolist.model.utils.getDate
+import com.example.weeklytodolist.model.utils.getDayOfWeek
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -31,50 +34,62 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
             initialValue = HomeUiState()
         )
-    var tabState by mutableStateOf(TabState())
+    var taskListState by mutableStateOf(TaskListState())
 
     init {
         viewModelScope.launch {
             homeUiState.collectLatest {
-                tabState = TabState(
-                    currentList = when (tabState.tab) {
+                taskListState = TaskListState(
+                    tabList = when (taskListState.tab) {
                         TypeList.DEFAULT -> it.tasks.filter { task -> !(task.done || task.archive) }
                         TypeList.DONE -> it.tasks.filter { task -> task.done }
                         TypeList.ARCHIVE -> it.tasks.filter { task -> task.done && task.archive }
                     },
-                    tab = tabState.tab
+                    tab = taskListState.tab,
+                    dayOfWeek = DateFormatInfo.currentDayOfWeek()
                 )
-                Log.d("DEBUG: init viewmodel", tabState.currentList.toString())
+                tabChanged()
             }
         }
     }
 
     fun tabChanged(tabTitle: String = TypeList.DEFAULT.name) {
         Log.d("Tab's title", tabTitle)
-        tabState = when (tabTitle) {
-            TypeList.DONE.name -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> task.done },
+        taskListState = when (tabTitle) {
+            TypeList.DONE.name -> taskListState.copy(
+                tabList = homeUiState.value.tasks.filter { task -> task.done },
                 tab = TypeList.DONE
             )
 
-            TypeList.ARCHIVE.name -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> task.done && task.archive },
+            TypeList.ARCHIVE.name -> taskListState.copy(
+                tabList = homeUiState.value.tasks.filter { task -> task.done && task.archive },
                 tab = TypeList.ARCHIVE
             )
 
-            TypeList.DEFAULT.name -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> !(task.done || task.archive) },
+            TypeList.DEFAULT.name -> taskListState.copy(
+                tabList = homeUiState.value.tasks.filter { task -> !(task.done || task.archive) },
                 tab = TypeList.DEFAULT
             )
 
-            else -> tabState.copy(
-                currentList = homeUiState.value.tasks.filter { task -> !(task.done || task.archive) },
+            else -> taskListState.copy(
+                tabList = homeUiState.value.tasks.filter { task -> !(task.done || task.archive) },
                 tab = TypeList.DEFAULT
             )
         }
         Log.d(
-            "DEBUG: current list",
-            tabState.currentList.toString()
+            "DEBUG: Tab changed",
+            taskListState.tabList.toString()
+        )
+        dayChanged(taskListState.dayOfWeek)
+    }
+
+    fun dayChanged(day: String = DateFormatInfo.currentDayOfWeek()) {
+        Log.d("DateList: day parameter", day)
+        taskListState = taskListState.copy(
+            currentList = taskListState.tabList.filter {
+                day.equals(it.getDayOfWeek(), ignoreCase = true)
+            },
+            dayOfWeek = day
         )
     }
 
@@ -83,7 +98,6 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
     }
 
     fun markAsDone(task: Task) {
-        Log.d("DEBUG: MarkAsDone", tabState.tab.name)
         viewModelScope.launch {
             taskRepository.modifyTable(task.copy(done = !task.done))
         }
@@ -105,9 +119,11 @@ data class HomeUiState(
     val tasks: List<Task> = listOf(),
 )
 
-data class TabState(
+data class TaskListState(
+    var tabList: List<Task> = listOf(),
     var currentList: List<Task> = listOf(),
-    var tab: TypeList = TypeList.DEFAULT
+    var tab: TypeList = TypeList.DEFAULT,
+    var dayOfWeek: String = DateFormatInfo.currentDayOfWeek(),
 )
 
 enum class TypeList {

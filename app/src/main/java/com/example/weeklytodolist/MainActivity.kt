@@ -9,10 +9,13 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import com.example.weeklytodolist.data.TaskDatabase
+import com.example.weeklytodolist.model.utils.DateFormatInfo
 import com.example.weeklytodolist.ui.theme.WeeklyTodoListTheme
+import java.sql.Timestamp
+import java.text.DateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
