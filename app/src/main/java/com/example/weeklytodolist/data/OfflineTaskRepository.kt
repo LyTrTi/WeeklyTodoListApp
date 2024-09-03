@@ -20,6 +20,10 @@ class OfflineTaskRepository(private val dao: TaskDao): TaskRepository {
         return dao.getTaskById(taskId)
     }
 
+    override suspend fun searchByName(taskName: String): List<Task> {
+        return dao.searchByName(taskName)
+    }
+
     override suspend fun deleteTask(taskId: Int) {
         dao.deleteTask(taskId)
     }

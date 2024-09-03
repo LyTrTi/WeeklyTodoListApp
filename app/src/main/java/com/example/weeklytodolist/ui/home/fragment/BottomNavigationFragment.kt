@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.home
+package com.example.weeklytodolist.ui.home.fragment
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.ui.ViewModelProvider
+import com.example.weeklytodolist.ui.home.HomeScreenViewModel
+import com.example.weeklytodolist.ui.home.HomeUiState
+import com.example.weeklytodolist.ui.home.TaskListState
+import com.example.weeklytodolist.ui.home.TypeList
 
 @Composable
 fun BottomNavigation(

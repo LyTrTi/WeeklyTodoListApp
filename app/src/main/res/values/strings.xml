@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">WeeklyTodoList</string>
-
     <string name="task_detail">TaskDetail</string>
+    <string name="search_result_screen">SearchResultScreen</string>
+    <string name="search_task">Search</string>
 
     <string name="DefaultTask">Default</string>
     <string name="DoneTask">Done</string>

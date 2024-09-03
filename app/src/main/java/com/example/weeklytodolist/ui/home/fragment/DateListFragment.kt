@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.home
+package com.example.weeklytodolist.ui.home.fragment
 
 import android.icu.text.DateFormatSymbols
 import androidx.compose.foundation.BorderStroke

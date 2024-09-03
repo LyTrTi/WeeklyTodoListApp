@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.home
+package com.example.weeklytodolist.ui.home.fragment
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

@@ -1,32 +1,34 @@
 package com.example.weeklytodolist.ui.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
+import com.example.weeklytodolist.ui.TaskFAB
 import com.example.weeklytodolist.ui.ViewModelProvider
+import com.example.weeklytodolist.ui.home.fragment.BottomNavigation
+import com.example.weeklytodolist.ui.home.fragment.ContentFragment
+import com.example.weeklytodolist.ui.home.fragment.DateListFragment
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
+import com.example.weeklytodolist.ui.search.SearchBarFragment
 import com.example.weeklytodolist.ui.task.TaskEntryFragment
+import com.example.weeklytodolist.ui.task.TaskListFragment
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 object HomeDestination : NavigationDestination {
@@ -35,24 +37,16 @@ object HomeDestination : NavigationDestination {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
     navController: NavController,
+    scope: CoroutineScope,
     onCardClicked: (Task) -> Unit,
     homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
     val homeUiState by homeScreenViewModel.homeUiState.collectAsState()
-
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            skipHiddenState = false
-        )
-    )
-    val scope = rememberCoroutineScope()
-    // BottomSheet
     TaskEntryFragment(
         modifier = modifier,
         headerTitle = "Add Task",
@@ -63,7 +57,8 @@ fun HomeScreen(
                 SearchBarFragment(
                     modifier = modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .padding(vertical = 4.dp, horizontal = 8.dp),
+                    navController = navController
                 )
             },
             bottomBar = {
@@ -82,23 +77,46 @@ fun HomeScreen(
                     }
                 )
             }
-        ) {
+        ) { paddingValues ->
             //TODO: implement loading screen using loading status in the homeUiState
             ContentFragment(
                 modifier = Modifier
                     .fillMaxSize(),
-                contentPaddingValues = it,
-                onCardClicked = { task ->
-                    onCardClicked(task)
-                }
-            )
+                contentPaddingValues = paddingValues
+            ) {
+                MainScreen(
+                    homeScreenViewModel = homeScreenViewModel,
+                    onCardClicked = onCardClicked
+                )
+            }
         }
     }
 }
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        Text(text = "Loading...")
-    }
+fun MainScreen(
+    homeScreenViewModel: HomeScreenViewModel,
+    onCardClicked: (Task) -> Unit
+) {
+    DateListFragment(
+        modifier = Modifier.padding(8.dp),
+        onDateClicked = { dayOfWeek ->
+            homeScreenViewModel.dayChanged(dayOfWeek)
+        }
+    )
+    HorizontalDivider()
+    TaskListFragment(
+        modifier = Modifier,
+        listTasks = homeScreenViewModel.taskListState.currentList,
+        onDoneClicked = { task ->
+            Log.d(
+                "DEBUG: ContentFragment",
+                homeScreenViewModel.taskListState.tab.name
+            )
+            homeScreenViewModel.markAsDone(task)
+        },
+        onCardClicked = {
+            onCardClicked(it)
+        }
+    )
 }

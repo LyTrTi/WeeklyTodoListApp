@@ -1,38 +1,45 @@
 package com.example.weeklytodolist.ui.navigation
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.weeklytodolist.model.Task
-import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.home.HomeDestination
 import com.example.weeklytodolist.ui.home.HomeScreen
-import com.example.weeklytodolist.ui.home.HomeScreenViewModel
+import com.example.weeklytodolist.ui.search.SearchResultScreen
+import com.example.weeklytodolist.ui.search.SearchScreenDestination
 import com.example.weeklytodolist.ui.task.TaskDetailDestination
 import com.example.weeklytodolist.ui.task.TaskDetailScreen
-import com.example.weeklytodolist.ui.task.TaskDetailViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenNavHost(
     navController: NavHostController = rememberNavController()
 ) {
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false
+        )
+    )
+    val scope = rememberCoroutineScope()
+
     NavHost(navController = navController, startDestination = HomeDestination.route) {
         composable(route = HomeDestination.route) {
             HomeScreen(
                 modifier = Modifier,
+                bottomSheetScaffoldState = bottomSheetScaffoldState,
+                scope = scope,
                 navController = navController,
                 onCardClicked = { task ->
                     Log.d("DETAIL:", "${TaskDetailDestination.route}/${task.id}")
@@ -47,8 +54,15 @@ fun ScreenNavHost(
             })
         ) {
             TaskDetailScreen(
-                navController = navController
+                navController = navController,
+                bottomSheetScaffoldState = bottomSheetScaffoldState,
+                scope = scope,
             )
+        }
+        composable(
+            route = SearchScreenDestination.route
+        ) {
+            SearchResultScreen(navController = navController)
         }
     }
 }

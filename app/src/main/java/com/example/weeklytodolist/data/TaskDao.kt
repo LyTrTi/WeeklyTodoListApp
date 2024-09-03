@@ -36,6 +36,13 @@ interface TaskDao {
     """)
     suspend fun getTaskById(taskId: Int): Task
 
+    @Query("""
+        select *
+        from task
+        where name like :taskName
+    """)
+    suspend fun searchByName(taskName: String): List<Task>
+
     @Upsert
     suspend fun modifyTable(task: Task)
 

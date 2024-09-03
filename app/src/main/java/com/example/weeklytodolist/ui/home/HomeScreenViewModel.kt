@@ -119,13 +119,12 @@ data class HomeUiState(
     val tasks: List<Task> = listOf(),
 )
 
+enum class TypeList {
+    DEFAULT, ARCHIVE, DONE
+}
 data class TaskListState(
     var tabList: List<Task> = listOf(),
     var currentList: List<Task> = listOf(),
     var tab: TypeList = TypeList.DEFAULT,
     var dayOfWeek: String = DateFormatInfo.currentDayOfWeek(),
 )
-
-enum class TypeList {
-    DEFAULT, ARCHIVE, DONE
-}

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,8 +41,9 @@ import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.getDate
 import com.example.weeklytodolist.ui.ViewModelProvider
-import com.example.weeklytodolist.ui.home.TaskFAB
+import com.example.weeklytodolist.ui.TaskFAB
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 object TaskDetailDestination : NavigationDestination {
@@ -56,16 +58,10 @@ object TaskDetailDestination : NavigationDestination {
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
+    scope: CoroutineScope,
     taskDetailsViewModel: TaskDetailViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            skipHiddenState = false
-        )
-    )
-    val scope = rememberCoroutineScope()
-
     val uiState = taskDetailsViewModel.uiState.collectAsState()
     Log.d("DETAIL: Viewmodel", uiState.value.toString())
 
@@ -105,25 +101,6 @@ fun TaskDetailScreen(
             )
         }
     }
-//
-//    Scaffold(
-//        topBar = {
-//            TaskDetailTopBar(
-//                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-//                title = uiState.value.name,
-//                onBackButton = { navController.navigateUp() }
-//            )
-//        }
-//    ) { innerPadding ->
-//        TaskDetailBody(
-//            modifier = Modifier.padding(horizontal = 16.dp),
-//            currentTask = uiState.value,
-//            contentPadding = innerPadding,
-//            onChecked = {
-//                taskDetailsViewModel.unDone()
-//            }
-//        )
-//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,11 +112,6 @@ fun TaskDetailTopBar(
 ) {
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
-        navigationIcon = {
-            IconButton(onClick = { onBackButton() }) {
-                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
-            }
-        },
         scrollBehavior = scrollBehavior
     )
 }
