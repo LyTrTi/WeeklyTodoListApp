@@ -48,13 +48,13 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
                     tab = taskListState.tab,
                     dayOfWeek = DateFormatInfo.currentDayOfWeek()
                 )
-                tabChanged()
+                tabChanged(taskListState.tab.name)
             }
         }
     }
 
-    fun tabChanged(tabTitle: String = TypeList.DEFAULT.name) {
-        Log.d("Tab's title", tabTitle)
+    fun tabChanged(tabTitle: String) {
+        Log.d("DEBUG: Tab's title", tabTitle)
         taskListState = when (tabTitle) {
             TypeList.DONE.name -> taskListState.copy(
                 tabList = homeUiState.value.tasks.filter { task -> task.done },

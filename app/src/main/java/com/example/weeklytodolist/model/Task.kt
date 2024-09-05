@@ -17,4 +17,4 @@ data class Task (
     val archive: Boolean = false,
     val description: String = "",
     val dateTime: String = DateFormatInfo.currentDateTime(),
-)
+): Any()

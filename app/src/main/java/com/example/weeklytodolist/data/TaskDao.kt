@@ -39,7 +39,7 @@ interface TaskDao {
     @Query("""
         select *
         from task
-        where name like :taskName
+        where name like '%' || :taskName || '%'
     """)
     suspend fun searchByName(taskName: String): List<Task>
 

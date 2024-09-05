@@ -62,8 +62,8 @@ fun DateItem(
             containerColor = containerColor
         ),
         border = BorderStroke(
-            width = 1.dp,
-            brush = SolidColor(Color.DarkGray)
+            width = 0.5.dp,
+            brush = SolidColor(Color.Gray)
         )
     ) {
         Text(

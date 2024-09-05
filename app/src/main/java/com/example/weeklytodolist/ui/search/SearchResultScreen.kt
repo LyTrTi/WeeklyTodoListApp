@@ -22,14 +22,6 @@ fun SearchResultScreen(
     searchResultViewModel: SearchResultViewModel = viewModel(factory = ViewModelProvider.Factory),
     homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
-    searchResultViewModel.search()
-    TaskListFragment(
-        modifier = modifier,
-        listTasks = searchResultViewModel.resultTasks,
-        onDoneClicked = {
-            homeScreenViewModel.markAsDone(it)
-        }
-    ) {
-        navController.navigate(it.id)
-    }
+//    searchResultViewModel.search()
+
 }

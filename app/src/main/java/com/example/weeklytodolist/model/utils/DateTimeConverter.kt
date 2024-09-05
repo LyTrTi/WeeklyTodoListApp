@@ -5,7 +5,7 @@ import androidx.room.TypeConverters
 import java.time.LocalDateTime
 
 @TypeConverters
-class DateTimeConverter {
+object DateTimeConverter {
     @TypeConverter
     fun dateToString(dateTime: LocalDateTime): String? {
         val dateTimeString = dateTime.format(DateFormatInfo.Date.DATE_FORMAT_PATTERN)

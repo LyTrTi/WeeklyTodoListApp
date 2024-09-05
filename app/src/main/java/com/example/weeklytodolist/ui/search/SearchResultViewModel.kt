@@ -8,31 +8,67 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weeklytodolist.data.TaskRepository
 import com.example.weeklytodolist.model.Task
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+enum class TypeList {
+    Suggestions, Result, Recent
+}
+
+data class SearchState(
+    var type: TypeList = TypeList.Recent,
+    var toShow: List<Task> = listOf(),
+    var searchValue: String = ""
+)
+
+//TODO: TypeList Recent: take it from data store -> String
+//TODO: TypeList Suggestion: take it from database with search value -> String
+//TODO: TypeList Result: take it from database -> task
+
 class SearchResultViewModel(private val taskRepository: TaskRepository) : ViewModel() {
-    lateinit var resultTasks: MutableList<Task>
+    var searchUiState by mutableStateOf(SearchState())
         private set
 
-    private var _searchValue = mutableStateOf("")
-    val searchValue by _searchValue
-
-    private var _isFocused by mutableStateOf(false)
-    val isFocused = _isFocused
-
     fun onQueryChange(text: String) {
-        _searchValue.value += text
-        Log.d("SearchVM:", _searchValue.value)
-    }
-
-    fun onFocus() {
-        _isFocused = !_isFocused
-    }
-
-    fun search() {
+        searchUiState = searchUiState.copy(
+            searchValue = text
+        )
+        Log.d("SearchValue:", searchUiState.searchValue)
         runBlocking {
-            resultTasks = taskRepository.searchByName(_searchValue.value).toMutableList()
+            delay(5L)
+        }
+        onTyping()
+    }
+
+    fun onClearing() {
+        //TODO: DataStore -> toShow recent searches
+        viewModelScope.launch {
+            searchUiState = searchUiState.copy(
+                type = TypeList.Recent,
+                toShow = listOf(),
+                searchValue = ""
+            )
+        }
+    }
+
+    fun onSearch() {
+        viewModelScope.launch {
+            searchUiState = searchUiState.copy(
+                type = TypeList.Result,
+                toShow = taskRepository.searchByName(searchUiState.searchValue)
+            )
+        }
+    }
+
+    fun onTyping() {
+        viewModelScope.launch {
+            searchUiState = searchUiState.copy(
+                type = TypeList.Suggestions,
+                toShow = taskRepository.searchByName(searchUiState.searchValue)
+            )
+            Log.d("Typing", searchUiState.searchValue)
+            Log.d("Typing", "DB: ${taskRepository.searchByName(searchUiState.searchValue)}")
         }
     }
 }

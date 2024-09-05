@@ -22,7 +22,7 @@ object DateFormatInfo {
 
     object Date {
         val DATE_FORMAT_PATTERN: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val indexes: Pair<Int, Int> = Pair(TIME_LENGTH, TIME_LENGTH + DATE_LENGTH)
+        val indexes: Pair<Int, Int> = Pair(TIME_LENGTH + 1, TIME_LENGTH + DATE_LENGTH)
     }
 
     object DayOfWeek {

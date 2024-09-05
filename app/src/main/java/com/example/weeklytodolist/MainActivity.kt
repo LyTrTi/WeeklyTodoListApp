@@ -23,3 +23,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+fun main() {
+    val text = "test task 1"
+    val regex = Regex("test(.+)")
+
+    val matches = regex.findAll(text)
+    val names = matches.map { it.groupValues[1] }.joinToString()
+    println(names) // Alice, Bob, Eve
+}
