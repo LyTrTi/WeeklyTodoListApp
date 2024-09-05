@@ -25,6 +25,7 @@ fun ListOptionsFragment(
     modifier: Modifier = Modifier,
     listOptions: List<Task>,
     searchValue: String = "",
+    onOptionClicked: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.padding(horizontal = 8.dp)
@@ -35,7 +36,8 @@ fun ListOptionsFragment(
                     .fillMaxWidth()
                     .padding(2.dp),
                 elevation = CardDefaults.cardElevation(6.dp),
-                shape = RoundedCornerShape(20)
+                shape = RoundedCornerShape(20),
+                onClick = { onOptionClicked(it.name) }
             ) {
                 FormatOption(
                     modifier = Modifier.padding(6.dp),
@@ -85,7 +87,8 @@ fun PreviewListOption() {
             Task(id = 4, name = "test task 4"),
             Task(id = 5, name = "test task 5"),
         ),
-        searchValue = "test t"
+        searchValue = "test t",
+        onOptionClicked = {}
     )
 }
 

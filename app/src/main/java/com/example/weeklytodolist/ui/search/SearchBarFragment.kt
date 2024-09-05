@@ -1,7 +1,10 @@
 package com.example.weeklytodolist.ui.search
 
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -11,7 +14,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,9 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.weeklytodolist.R
@@ -37,27 +40,37 @@ fun SearchBarFragment(
     searchResultViewModel: SearchResultViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     SearchBar(
-        modifier = modifier,
+        modifier = modifier.onFocusChanged {
+            if (!it.isFocused) {
+                InputMethodManager.HIDE_IMPLICIT_ONLY
+            }
+        },
         inputField = {
             SearchBarDefaults.InputField(
                 query = searchResultViewModel.searchUiState.searchValue,
                 onQueryChange = {
-                    Log.d("SearchBar:","Is empty: ${it.isEmpty()}")
+                    Log.d("SearchBar: $it","Is empty: ${it.isEmpty()}")
                     if (it.isNotEmpty()) {
                         Log.d("SearchBar:", it)
                         searchResultViewModel.onQueryChange(it)
+                        searchResultViewModel.onTyping()
                     } else searchResultViewModel.onClearing()
                 },
                 onSearch = {
-                    expanded = false
                     searchResultViewModel.onSearch()
                 },
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
                 leadingIcon = {
-                    IconButton(onClick = { expanded = !expanded }) {
+                    IconButton(onClick = {
+                        if(expanded) {
+                            searchResultViewModel.onClearing()
+                        }
+                        expanded = !expanded
+                    }) {
                         Icon(
                             imageVector = when (expanded) {
                                 true -> Icons.AutoMirrored.Filled.ArrowBack
@@ -84,9 +97,13 @@ fun SearchBarFragment(
                 TypeList.Recent, TypeList.Suggestions ->
                     ListOptionsFragment(
                         listOptions = searchResultViewModel.searchUiState.toShow,
-                        searchValue = searchResultViewModel.searchUiState.searchValue
+                        searchValue = searchResultViewModel.searchUiState.searchValue,
+                        onOptionClicked = {
+                            keyboardController?.hide()
+                            searchResultViewModel.onQueryChange(it)
+                            searchResultViewModel.onSearch()
+                        }
                     )
-
                 else -> {
                     TaskListFragment(
                         listTasks = searchResultViewModel.searchUiState.toShow,

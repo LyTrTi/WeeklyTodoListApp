@@ -38,7 +38,6 @@ class SearchResultViewModel(private val taskRepository: TaskRepository) : ViewMo
         runBlocking {
             delay(5L)
         }
-        onTyping()
     }
 
     fun onClearing() {

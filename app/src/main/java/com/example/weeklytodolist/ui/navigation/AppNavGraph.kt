@@ -56,7 +56,7 @@ fun ScreenNavHost(
             TaskDetailScreen(
                 navController = navController,
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
-                scope = scope,
+                scope = scope
             )
         }
         composable(

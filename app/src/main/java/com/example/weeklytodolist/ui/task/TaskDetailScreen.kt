@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,15 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -40,8 +37,9 @@ import androidx.navigation.NavController
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.getDate
-import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.TaskFAB
+import com.example.weeklytodolist.ui.ViewModelProvider
+import com.example.weeklytodolist.ui.home.HomeScreenViewModel
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -60,10 +58,14 @@ fun TaskDetailScreen(
     navController: NavController,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     scope: CoroutineScope,
-    taskDetailsViewModel: TaskDetailViewModel = viewModel(factory = ViewModelProvider.Factory)
+    taskDetailsViewModel: TaskDetailViewModel = viewModel(factory = ViewModelProvider.Factory),
+    homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
     val uiState = taskDetailsViewModel.uiState.collectAsState()
-    Log.d("DETAIL: Viewmodel", uiState.value.toString())
+
+    if (uiState.value == null) {
+        navController.navigateUp()
+    }
 
     TaskEntryFragment(
         modifier = Modifier,
@@ -77,7 +79,10 @@ fun TaskDetailScreen(
                 TaskDetailTopBar(
                     scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                     title = uiState.value.name,
-                    onBackButton = { navController.navigateUp() }
+                    onBackButton = { navController.navigateUp() },
+                    onTaskDelete = {
+                        homeScreenViewModel.deleteTask(taskId = taskDetailsViewModel.uiState.value.id)
+                    }
                 )
             },
             floatingActionButton = {
@@ -108,11 +113,25 @@ fun TaskDetailScreen(
 fun TaskDetailTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     title: String,
-    onBackButton: () -> Unit
+    onBackButton: () -> Unit,
+    onTaskDelete: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
-        scrollBehavior = scrollBehavior
+        navigationIcon = {
+            IconButton(onClick = { onBackButton() }) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        actions = {
+            IconButton(onClick = { onTaskDelete() }) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Localized description"
+                )
+            }
+        }
     )
 }
 

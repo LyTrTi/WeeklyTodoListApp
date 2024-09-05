@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -28,8 +29,8 @@ fun DateListFragment(
     val weekDays = DateFormatSymbols().weekdays.filter {
         it.isNotEmpty()
     }
-
-    LazyRow(modifier = modifier) {
+    val state = rememberLazyListState(initialFirstVisibleItemIndex = weekDays.indexOf(uiState))
+    LazyRow(modifier = modifier, state = state) {
         items(items = weekDays, key = { day -> weekDays.indexOf(day) }) { day ->
             DateItem(
                 uiState = uiState,
@@ -86,6 +87,6 @@ fun PreviewDateItem() {
 @Composable
 fun PreviewDateListFragment() {
     Surface {
-        DateListFragment(onDateClicked = {day -> })
+        DateListFragment(onDateClicked = {})
     }
 }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.data.TaskRepository
 import com.example.weeklytodolist.model.Task
 import kotlinx.coroutines.flow.MutableStateFlow
