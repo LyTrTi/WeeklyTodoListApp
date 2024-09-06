@@ -40,7 +40,6 @@ fun ScreenNavHost(
                 modifier = Modifier,
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
                 scope = scope,
-                navController = navController,
                 onCardClicked = { task ->
                     Log.d("DETAIL:", "${TaskDetailDestination.route}/${task.id}")
                     navController.navigate("${TaskDetailDestination.route}/${task.id}")
@@ -54,11 +53,13 @@ fun ScreenNavHost(
             })
         ) {
             TaskDetailScreen(
-                navController = navController,
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
-                scope = scope
+                scope = scope,
+                navigateBack = {
+                    navController.navigateUp()
+                }
             )
-        }
+         }
         composable(
             route = SearchScreenDestination.route
         ) {

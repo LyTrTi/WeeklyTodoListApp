@@ -12,7 +12,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +43,6 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
-    navController: NavController,
     scope: CoroutineScope,
     onCardClicked: (Task) -> Unit,
     homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
@@ -58,7 +59,7 @@ fun HomeScreen(
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp, horizontal = 8.dp),
-                    navController = navController
+                    onCardClicked = onCardClicked
                 )
             },
             bottomBar = {
@@ -98,6 +99,12 @@ fun MainScreen(
     homeScreenViewModel: HomeScreenViewModel,
     onCardClicked: (Task) -> Unit
 ) {
+    val listState by remember {
+        derivedStateOf {
+            homeScreenViewModel.taskListState
+        }
+    }
+
     DateListFragment(
         modifier = Modifier.padding(8.dp),
         onDateClicked = { dayOfWeek ->
@@ -107,7 +114,7 @@ fun MainScreen(
     HorizontalDivider()
     TaskListFragment(
         modifier = Modifier,
-        listTasks = homeScreenViewModel.taskListState.currentList,
+        listTasks = listState.currentList,
         onDoneClicked = { task ->
             Log.d(
                 "DEBUG: ContentFragment",

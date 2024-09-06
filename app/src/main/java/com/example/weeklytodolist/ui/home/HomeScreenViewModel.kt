@@ -93,10 +93,6 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
         )
     }
 
-    fun deleteTask(taskId: Int) {
-        viewModelScope.launch { taskRepository.deleteTask(taskId) }
-    }
-
     fun markAsDone(task: Task) {
         viewModelScope.launch {
             taskRepository.modifyTable(task.copy(done = !task.done))

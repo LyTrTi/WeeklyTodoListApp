@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
@@ -22,10 +23,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -33,13 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.getDate
 import com.example.weeklytodolist.ui.TaskFAB
 import com.example.weeklytodolist.ui.ViewModelProvider
-import com.example.weeklytodolist.ui.home.HomeScreenViewModel
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -55,22 +59,18 @@ object TaskDetailDestination : NavigationDestination {
 @Composable
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     scope: CoroutineScope,
     taskDetailsViewModel: TaskDetailViewModel = viewModel(factory = ViewModelProvider.Factory),
-    homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
+    navigateBack: () -> Unit
 ) {
+    Log.d("TaskDetail:", "Triggered")
     val uiState = taskDetailsViewModel.uiState.collectAsState()
-
-    if (uiState.value == null) {
-        navController.navigateUp()
-    }
 
     TaskEntryFragment(
         modifier = Modifier,
         headerTitle = "Edit Task",
-        currentTask = uiState.value,
+        currentTask = uiState.value.task,
         scaffoldState = bottomSheetScaffoldState
     ) {
         Scaffold(
@@ -78,10 +78,11 @@ fun TaskDetailScreen(
             topBar = {
                 TaskDetailTopBar(
                     scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-                    title = uiState.value.name,
-                    onBackButton = { navController.navigateUp() },
+                    title = "Task detail",
+                    onBackButton = { navigateBack() },
                     onTaskDelete = {
-                        homeScreenViewModel.deleteTask(taskId = taskDetailsViewModel.uiState.value.id)
+                        navigateBack()
+                        taskDetailsViewModel.deleteTask()
                     }
                 )
             },
@@ -96,14 +97,16 @@ fun TaskDetailScreen(
                 )
             }
         ) { innerPadding ->
-            TaskDetailBody(
-                modifier = Modifier.padding(16.dp),
-                currentTask = uiState.value,
-                contentPadding = innerPadding,
-                onChecked = {
-                    taskDetailsViewModel.unDone()
-                }
-            )
+            uiState.value.task?.let {
+                TaskDetailBody(
+                    modifier = Modifier.padding(16.dp),
+                    currentTask = it,
+                    contentPadding = innerPadding,
+                    onChecked = {
+                        taskDetailsViewModel.unDone()
+                    }
+                )
+            }
         }
     }
 }
@@ -116,6 +119,7 @@ fun TaskDetailTopBar(
     onBackButton: () -> Unit,
     onTaskDelete: () -> Unit,
 ) {
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
         navigationIcon = {
@@ -125,7 +129,7 @@ fun TaskDetailTopBar(
         },
         scrollBehavior = scrollBehavior,
         actions = {
-            IconButton(onClick = { onTaskDelete() }) {
+            IconButton(onClick = { deleteConfirmationRequired = true }) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = "Localized description"
@@ -133,6 +137,16 @@ fun TaskDetailTopBar(
             }
         }
     )
+
+    if (deleteConfirmationRequired) {
+        DeleteConfirmationDialog(
+            onDeleteConfirm = {
+                deleteConfirmationRequired = false
+                onTaskDelete()
+            },
+            onDeleteCancel = { deleteConfirmationRequired = false }
+        )
+    }
 }
 
 @Composable
@@ -199,6 +213,29 @@ fun RowAttribute(
     }
 }
 
+@Composable
+fun DeleteConfirmationDialog(
+    modifier: Modifier = Modifier,
+    onDeleteConfirm: () -> Unit,
+    onDeleteCancel: () -> Unit
+) {
+    AlertDialog(
+        modifier = modifier,
+        title = { Text(text = "Attention") },
+        text = { Text(text = "Are you sure you want to delete?") },
+        onDismissRequest = {},
+        dismissButton = {
+            TextButton(onClick = onDeleteCancel) {
+                Text(text = "No")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDeleteConfirm) {
+                Text(text = "Yes")
+            }
+        }
+    )
+}
 
 @Preview(showBackground = true)
 @Composable

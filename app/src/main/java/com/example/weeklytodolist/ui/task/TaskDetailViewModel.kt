@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weeklytodolist.data.TaskRepository
 import com.example.weeklytodolist.model.Task
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TaskDetailViewModel(
@@ -21,69 +19,35 @@ class TaskDetailViewModel(
 
     private val taskId: Int = checkNotNull(savedStateHandle[TaskDetailDestination.TASK_ID_ARG])
 
-    var uiState: StateFlow<Task> =
-        taskRepository.getTaskByIdFlow(taskId).stateIn(
+    var uiState: StateFlow<TaskDetailUiState> =
+        taskRepository.getTaskByIdFlow(taskId).map {
+            TaskDetailUiState(task = it)
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = Task(name = "", description = "")
-        )
-
-    lateinit var modifiedTask: MutableStateFlow<Task>
-
-    init {
-        viewModelScope.launch {
-            uiState.collectLatest {
-                modifiedTask = MutableStateFlow(it)
-            }
+            initialValue = TaskDetailUiState()
+        ).also {
+            Log.d("DEBUG:", "TaskDetailViewModel StateFlow")
         }
-    }
 
     fun unDone() {
-        Log.d("unDone: ", modifiedTask.value.toString())
-        modifiedTask.update {
-            it.copy(
-                done = !it.done
-            )
-        }
-        Log.d("unDone: ", modifiedTask.value.toString())
-        onModify()
+        val currentTask = uiState.value.task!!
+        onModify(currentTask.copy(done = !currentTask.done))
     }
 
-    fun unDoneArchive() {
-        modifiedTask.update {
-            it.copy(
-                archive = !it.archive
-            )
-        }
-        onModify()
+    fun unArchive() {
+        val currentTask = uiState.value.task!!
+        onModify(currentTask.copy(archive = !currentTask.archive))
     }
 
-    fun modifyName(newName: String) {
-        modifiedTask.update {
-            it.copy(
-                name = newName
-            )
-        }
-        onModify()
+    fun deleteTask() {
+        viewModelScope.launch { taskRepository.deleteTask(taskId) }
     }
 
-    fun modifyDescription(newDesc: String) {
-        modifiedTask.update {
-            it.copy(
-                description = newDesc
-            )
-        }
-        onModify()
-    }
-
-    private fun onModify() {
+    private fun onModify(task: Task) {
         viewModelScope.launch {
-            taskRepository.modifyTable(modifiedTask.value)
+            taskRepository.modifyTable(task)
         }
-    }
-
-    fun getTask() {
-        taskRepository.getTaskByIdFlow(taskId)
     }
 
     companion object {
@@ -91,12 +55,7 @@ class TaskDetailViewModel(
     }
 }
 
-//
-//data class TaskDetails(
-//    var name: String = "",
-//    var description: String = ""
-//)
-//
-//fun TaskDetails.toTask(): Task {
-//    return Task(name = name, description = description)
-//}
+data class TaskDetailUiState(
+    val deleted: Boolean = false,
+    val task: Task? = null
+)
