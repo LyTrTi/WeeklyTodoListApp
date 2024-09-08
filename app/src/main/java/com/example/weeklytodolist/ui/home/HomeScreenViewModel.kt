@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weeklytodolist.data.TaskRepository
@@ -18,22 +19,31 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.math.exp
+
+private const val TAG = "HomeScreenViewModel"
 
 class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> =
-        taskRepository.getAllTaskFlow().map {
-            Log.d("DEBUG: List tasks", it.toString())
-            HomeUiState(
-                status = Status.SUCCESS,
-                tasks = it,
+        taskRepository.getAllTaskFlow()
+            .catch {
+                if (it is IOException) {
+                    Log.d(TAG, "Failed to get Task of database", it)
+                } else {
+                    HomeUiState(status = Status.ERROR, message = it.message.toString())
+                }
+            }
+            .map {
+                Log.d("DEBUG: List tasks", it.toString())
+                HomeUiState(
+                    status = Status.SUCCESS,
+                    tasks = it,
+                )
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = HomeUiState()
             )
-        }.catch {
-            HomeUiState(status = Status.ERROR, message = it.message.toString())
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = HomeUiState()
-        )
     var taskListState by mutableStateOf(TaskListState())
 
     init {
@@ -118,6 +128,7 @@ data class HomeUiState(
 enum class TypeList {
     DEFAULT, ARCHIVE, DONE
 }
+
 data class TaskListState(
     var tabList: List<Task> = listOf(),
     var currentList: List<Task> = listOf(),

@@ -8,7 +8,6 @@ import com.example.weeklytodolist.R
 import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.home.HomeScreenViewModel
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
-import com.example.weeklytodolist.ui.task.TaskListFragment
 
 object SearchScreenDestination : NavigationDestination {
     override val route: String = "searchresultscreen"
@@ -19,7 +18,7 @@ object SearchScreenDestination : NavigationDestination {
 fun SearchResultScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    searchResultViewModel: SearchResultViewModel = viewModel(factory = ViewModelProvider.Factory),
+    searchScreenViewModel: SearchScreenViewModel = viewModel(factory = ViewModelProvider.Factory),
     homeScreenViewModel: HomeScreenViewModel = viewModel(factory = ViewModelProvider.Factory)
 ) {
 //    searchResultViewModel.search()

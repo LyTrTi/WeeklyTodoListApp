@@ -1,5 +1,6 @@
 package com.example.weeklytodolist.ui
 
+import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -7,7 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.weeklytodolist.TaskApplication
 import com.example.weeklytodolist.ui.home.HomeScreenViewModel
-import com.example.weeklytodolist.ui.search.SearchResultViewModel
+import com.example.weeklytodolist.ui.search.SearchScreenViewModel
 import com.example.weeklytodolist.ui.task.TaskDetailViewModel
 import com.example.weeklytodolist.ui.task.TaskEntryViewModel
 
@@ -22,7 +23,10 @@ object ViewModelProvider {
         }
 
         initializer {
-            SearchResultViewModel(weeklyTodosApplication().appContainer.taskRepository)
+            SearchScreenViewModel(
+                taskRepository = weeklyTodosApplication().appContainer.taskRepository,
+                userPreferencesRepository = weeklyTodosApplication().userPreferencesRepository
+            )
         }
 
         initializer {

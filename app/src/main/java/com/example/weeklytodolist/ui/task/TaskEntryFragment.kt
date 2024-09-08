@@ -142,6 +142,7 @@ fun InputBody(
             },
             placeholder = { Text(text = "Name") },
             shape = RoundedCornerShape(16.dp),
+            singleLine = true
         )
         TaskAttribute(
             task = task,
