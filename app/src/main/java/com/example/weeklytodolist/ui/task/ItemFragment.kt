@@ -93,13 +93,6 @@ fun DefaultTaskItem(
     }
 }
 
-@Composable
-fun OptionItems(
-
-) {
-
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewTaskItem() {

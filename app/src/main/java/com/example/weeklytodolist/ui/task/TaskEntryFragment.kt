@@ -206,16 +206,6 @@ fun TaskAttribute(
                     .fillMaxWidth()
                     .weight(1f), text = "Date"
             )
-//            Button(
-//                modifier = Modifier.weight(1f),
-//                colors = ButtonDefaults.buttonColors(
-//                    contentColor = Color.DarkGray,
-//                    containerColor = Color.Transparent
-//                ),
-//                onClick = { }
-//            ) {
-//                task.date?.let { Text(text = it) }
-//            }
             TextButton(
                 modifier = Modifier.weight(1f),
                 onClick = { openDialog = !openDialog }
@@ -246,7 +236,6 @@ fun ButtonRow(
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.End
     ) {
-        // TODO:
         Button(onClick = { onCancelClicked() }) {
             Text(text = "Cancel")
         }
@@ -263,8 +252,10 @@ fun DatePickerScreen(
     confirmButton: (String) -> Unit
 ) {
     val datePickerState = rememberDatePickerState()
-    val confirmEnable by derivedStateOf {
-        datePickerState.selectedDateMillis != null
+    val confirmEnable by remember {
+        derivedStateOf {
+            datePickerState.selectedDateMillis != null
+        }
     }
 
     DatePickerDialog(
@@ -312,7 +303,7 @@ fun PreviewInputBody() {
 fun PreviewDatePicker() {
     Surface {
         DatePickerScreen(
-            onDismissRequest = { value -> },
+            onDismissRequest = {  },
             confirmButton = {}
         )
     }

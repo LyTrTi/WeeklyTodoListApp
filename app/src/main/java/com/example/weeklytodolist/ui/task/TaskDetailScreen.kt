@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -36,13 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.getDate
-import com.example.weeklytodolist.ui.TaskFAB
 import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
 import kotlinx.coroutines.CoroutineScope
@@ -65,12 +66,13 @@ fun TaskDetailScreen(
     navigateBack: () -> Unit
 ) {
     Log.d("TaskDetail:", "Triggered")
-    val uiState = taskDetailsViewModel.uiState.collectAsState()
+    val uiState by taskDetailsViewModel.uiState.collectAsState()
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
 
     TaskEntryFragment(
         modifier = Modifier,
         headerTitle = "Edit Task",
-        currentTask = uiState.value.task,
+        currentTask = uiState.task,
         scaffoldState = bottomSheetScaffoldState
     ) {
         Scaffold(
@@ -79,35 +81,61 @@ fun TaskDetailScreen(
                 TaskDetailTopBar(
                     scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                     title = "Task detail",
-                    onBackButton = { navigateBack() },
-                    onTaskDelete = {
-                        navigateBack()
-                        taskDetailsViewModel.deleteTask()
-                    }
+                    onBackButton = { navigateBack() }
                 )
             },
             floatingActionButton = {
-                TaskFAB(
-                    imageVector = Icons.Filled.Edit,
-                    onClicked = {
-                        scope.launch {
-                            bottomSheetScaffoldState.bottomSheetState.expand()
-                        }
-                    }
+                TaskDetailFAB(
+                    items = listOf(
+                        FABItem(
+                            icon = Icons.Default.Delete,
+                            name = "Delete",
+                            onClicked = {
+                                deleteConfirmationRequired = !deleteConfirmationRequired
+                            }
+                        ),
+                        FABItem(
+                            icon = Icons.Default.Edit,
+                            name = "Edit",
+                            onClicked = {
+                                scope.launch {
+                                    bottomSheetScaffoldState.bottomSheetState.expand()
+                                }
+                            }
+                        ),
+                        FABItem(
+                            icon = Icons.Default.ArrowDropDown,
+                            name = "Archive",
+                            enable = uiState.task?.done ?: false,
+                            onClicked = {
+                                taskDetailsViewModel.onArchiveClicked()
+                            }
+                        )
+                    )
                 )
             }
         ) { innerPadding ->
-            uiState.value.task?.let {
+            uiState.task?.let {
                 TaskDetailBody(
                     modifier = Modifier.padding(16.dp),
                     currentTask = it,
                     contentPadding = innerPadding,
                     onChecked = {
-                        taskDetailsViewModel.unDone()
+                        taskDetailsViewModel.onDoneClicked()
                     }
                 )
             }
         }
+    }
+    if (deleteConfirmationRequired) {
+        DeleteConfirmationDialog(
+            onDeleteConfirm = {
+                deleteConfirmationRequired = false
+                navigateBack()
+                taskDetailsViewModel.deleteTask()
+            },
+            onDeleteCancel = { deleteConfirmationRequired = false }
+        )
     }
 }
 
@@ -117,9 +145,7 @@ fun TaskDetailTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     title: String,
     onBackButton: () -> Unit,
-    onTaskDelete: () -> Unit,
 ) {
-    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
         navigationIcon = {
@@ -128,25 +154,7 @@ fun TaskDetailTopBar(
             }
         },
         scrollBehavior = scrollBehavior,
-        actions = {
-            IconButton(onClick = { deleteConfirmationRequired = true }) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Localized description"
-                )
-            }
-        }
     )
-
-    if (deleteConfirmationRequired) {
-        DeleteConfirmationDialog(
-            onDeleteConfirm = {
-                deleteConfirmationRequired = false
-                onTaskDelete()
-            },
-            onDeleteCancel = { deleteConfirmationRequired = false }
-        )
-    }
 }
 
 @Composable
@@ -162,7 +170,11 @@ fun TaskDetailBody(
             .padding(top = contentPadding.calculateTopPadding())
             .padding(horizontal = 16.dp),
     ) {
-        Text(text = currentTask.name, style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = currentTask.name,
+            style = MaterialTheme.typography.headlineMedium,
+            textDecoration = if (currentTask.archive) TextDecoration.LineThrough else TextDecoration.None
+        )
         HorizontalDivider()
         RowAttribute(
             modifier = Modifier.fillMaxWidth(),
@@ -172,7 +184,8 @@ fun TaskDetailBody(
                 modifier = Modifier.weight(1f),
                 checked = currentTask.done, onCheckedChange = {
                     onChecked()
-                }
+                },
+                enabled = !(currentTask.done && currentTask.archive)
             )
         }
         RowAttribute(

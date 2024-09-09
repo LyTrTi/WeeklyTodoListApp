@@ -1,6 +1,7 @@
 package com.example.weeklytodolist.ui.task
 
 import android.util.Log
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,14 +31,18 @@ class TaskDetailViewModel(
             Log.d("DEBUG:", "TaskDetailViewModel StateFlow")
         }
 
-    fun unDone() {
+    fun onDoneClicked() {
         val currentTask = uiState.value.task!!
-        onModify(currentTask.copy(done = !currentTask.done))
+        if (!currentTask.archive) {
+            onModify(currentTask.copy(done = !currentTask.done))
+        }
     }
 
-    fun unArchive() {
+    fun onArchiveClicked() {
         val currentTask = uiState.value.task!!
-        onModify(currentTask.copy(archive = !currentTask.archive))
+        if (currentTask.done) {
+            onModify(currentTask.copy(archive = !currentTask.archive))
+        }
     }
 
     fun deleteTask() {
@@ -58,4 +63,11 @@ class TaskDetailViewModel(
 data class TaskDetailUiState(
     val deleted: Boolean = false,
     val task: Task? = null
+)
+
+data class FABItem(
+    val icon: ImageVector,
+    val name: String,
+    val enable: Boolean = true,
+    val onClicked: () -> Unit
 )

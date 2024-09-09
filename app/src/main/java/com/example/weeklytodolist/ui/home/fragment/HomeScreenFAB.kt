@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui
+package com.example.weeklytodolist.ui.home.fragment
 
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TaskFAB(
+fun HomeScreenFAB(
     modifier: Modifier = Modifier,
     onClicked: () -> Unit,
     imageVector: ImageVector
@@ -48,7 +48,7 @@ fun TaskFAB(
 fun PreviewTaskActionButtonFragment() {
     Surface {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            TaskFAB(imageVector = Icons.Default.KeyboardArrowUp, onClicked = {})
+            HomeScreenFAB(imageVector = Icons.Default.KeyboardArrowUp, onClicked = {})
         }
     }
 }

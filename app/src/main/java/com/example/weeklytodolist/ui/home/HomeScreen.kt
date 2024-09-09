@@ -18,14 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
-import com.example.weeklytodolist.ui.TaskFAB
 import com.example.weeklytodolist.ui.ViewModelProvider
 import com.example.weeklytodolist.ui.home.fragment.BottomNavigation
 import com.example.weeklytodolist.ui.home.fragment.ContentFragment
 import com.example.weeklytodolist.ui.home.fragment.DateListFragment
+import com.example.weeklytodolist.ui.home.fragment.HomeScreenFAB
 import com.example.weeklytodolist.ui.navigation.NavigationDestination
 import com.example.weeklytodolist.ui.search.SearchBarFragment
 import com.example.weeklytodolist.ui.task.TaskEntryFragment
@@ -69,7 +68,7 @@ fun HomeScreen(
                 )
             },
             floatingActionButton = {
-                TaskFAB(
+                HomeScreenFAB(
                     imageVector = Icons.Filled.Add,
                     onClicked = {
                         scope.launch {
