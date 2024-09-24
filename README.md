@@ -1,2 +1,2 @@
 # WeeklyTodos
-Weekly Todo List app
+This project is used to learn syntax of Kotlin and Android Compose
