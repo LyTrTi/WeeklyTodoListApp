@@ -82,7 +82,8 @@ fun DefaultTaskItem(
                         onClick = {
                             isChecked = !isChecked
                             onDoneClicked(task)
-                        }
+                        },
+                        enabled = !task.archive
                     ) {
                         Icon(imageVector = icon, contentDescription = null)
                     }

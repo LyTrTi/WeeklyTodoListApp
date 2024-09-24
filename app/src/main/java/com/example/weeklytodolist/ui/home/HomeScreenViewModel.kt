@@ -7,11 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weeklytodolist.data.TaskRepository
+import com.example.weeklytodolist.domain.TaskRepository
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.DateFormatInfo
-import com.example.weeklytodolist.model.utils.getDate
 import com.example.weeklytodolist.model.utils.getDayOfWeek
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -19,12 +19,17 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.math.exp
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Qualifier
 
 private const val TAG = "HomeScreenViewModel"
 
-class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewModel() {
-    val homeUiState: StateFlow<HomeUiState> =
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor (
+    @Named("firestoreTaskRepository") private val taskRepository: TaskRepository
+) : ViewModel() {
+    private val homeUiState: StateFlow<HomeUiState> =
         taskRepository.getAllTaskFlow()
             .catch {
                 if (it is IOException) {
@@ -56,7 +61,7 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
                         TypeList.ARCHIVE -> it.tasks.filter { task -> task.done && task.archive }
                     },
                     tab = taskListState.tab,
-                    dayOfWeek = DateFormatInfo.currentDayOfWeek()
+                    dayOfWeek = taskListState.dayOfWeek
                 )
                 tabChanged(taskListState.tab.name)
             }
@@ -93,7 +98,7 @@ class HomeScreenViewModel(private val taskRepository: TaskRepository) : ViewMode
         dayChanged(taskListState.dayOfWeek)
     }
 
-    fun dayChanged(day: String = DateFormatInfo.currentDayOfWeek()) {
+    fun dayChanged(day: String) {
         Log.d("DateList: day parameter", day)
         taskListState = taskListState.copy(
             currentList = taskListState.tabList.filter {

@@ -35,9 +35,6 @@ fun TaskDetailFAB(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val transition = updateTransition(targetState = expanded, label = "")
-    val rotateValue by transition.animateFloat(label = "rotation") {
-        if (it) 540f else 0f
-    }
 
     Card {
         Column(

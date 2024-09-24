@@ -2,13 +2,17 @@
     <string name="app_name">WeeklyTodoList</string>
     <string name="task_detail">TaskDetail</string>
     <string name="search_result_screen">SearchResultScreen</string>
+    <string name="signup_screen">SignupScreen</string>
+    <string name="login_screen">LoginScreen</string>
+
     <string name="search_task">Search</string>
+    <string name="default_task">Default</string>
+    <string name="done_task">Done</string>
+    <string name="archive_task">Archive</string>
 
-    <string name="DefaultTask">Default</string>
-    <string name="DoneTask">Done</string>
-    <string name="ArchiveTask">Archive</string>
+    <string name="edit_task">Edit Task</string>
 
-    <string name="EditTask">Edit Task</string>
+    <string name="layout_preferences_name">layout_preferences</string>
 
     <string-array name="day_of_the_week">
         <item name="mon_day">Monday</item>

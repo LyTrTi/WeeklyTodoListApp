@@ -5,17 +5,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weeklytodolist.data.TaskRepository
+import com.example.weeklytodolist.domain.TaskRepository
 import com.example.weeklytodolist.model.Task
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Named
 
-class TaskDetailViewModel(
+@HiltViewModel
+class TaskDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val taskRepository: TaskRepository
+    @Named("firestoreTaskRepository") private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val taskId: Int = checkNotNull(savedStateHandle[TaskDetailDestination.TASK_ID_ARG])
@@ -30,6 +34,7 @@ class TaskDetailViewModel(
         ).also {
             Log.d("DEBUG:", "TaskDetailViewModel StateFlow")
         }
+        private set
 
     fun onDoneClicked() {
         val currentTask = uiState.value.task!!

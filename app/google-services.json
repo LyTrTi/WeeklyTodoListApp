@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "166786062650",
+    "project_id": "weeklytodolist-b24b5",
+    "storage_bucket": "weeklytodolist-b24b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166786062650:android:eb73278635d27a4bbc9803",
+        "android_client_info": {
+          "package_name": "com.example.weeklytodolist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAj6zaCR5fjXp13r0tHmY9Stkt0YB81wd0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

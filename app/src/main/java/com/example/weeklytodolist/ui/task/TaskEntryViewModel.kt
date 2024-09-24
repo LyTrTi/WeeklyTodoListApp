@@ -5,11 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weeklytodolist.data.TaskRepository
+import com.example.weeklytodolist.domain.TaskRepository
 import com.example.weeklytodolist.model.Task
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Named
 
-class TaskEntryViewModel(private val taskRepository: TaskRepository): ViewModel() {
+@HiltViewModel
+class TaskEntryViewModel @Inject constructor(
+    @Named("firestoreTaskRepository") private val taskRepository: TaskRepository
+) : ViewModel() {
     var newTask by mutableStateOf(Task())
 
     fun insertTask() {

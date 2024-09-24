@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.task
+package com.example.weeklytodolist.ui.home.fragment
 
 import android.util.Log
 import androidx.compose.foundation.layout.padding
@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.weeklytodolist.model.Task
+import com.example.weeklytodolist.ui.task.DefaultTaskItem
 
 @Composable
 fun TaskListFragment(

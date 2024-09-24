@@ -36,12 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.DateFormatInfo
 import com.example.weeklytodolist.model.utils.getDate
-import com.example.weeklytodolist.ui.ViewModelProvider
-import com.example.weeklytodolist.viewModel.TaskViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,7 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TaskEntryFragment(
     modifier: Modifier,
-    viewModel: TaskEntryViewModel = viewModel(factory = ViewModelProvider.Factory),
+    viewModel: TaskEntryViewModel = hiltViewModel(),
     currentTask: Task? = null,
     headerTitle: String,
     scaffoldState: BottomSheetScaffoldState,
@@ -87,7 +85,7 @@ fun TaskEntryFragment(
 @Composable
 fun TaskEntryBody(
     modifier: Modifier = Modifier,
-    taskViewModel: TaskEntryViewModel = viewModel(factory = TaskViewModel.factory),
+    taskViewModel: TaskEntryViewModel = hiltViewModel(),
     onSaveClicked: () -> Unit,
     onCancelClicked: () -> Unit
 ) {

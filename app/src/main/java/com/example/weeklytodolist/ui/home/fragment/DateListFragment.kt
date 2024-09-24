@@ -12,31 +12,37 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.weeklytodolist.model.utils.DateFormatInfo
 
 @Composable
 fun DateListFragment(
     modifier: Modifier = Modifier,
-    dateListViewModel: DateListViewModel = viewModel(),
     onDateClicked: (String) -> Unit,
 ) {
-    val uiState = dateListViewModel.uiState
+    var selectedDay by remember {
+        mutableStateOf(DateFormatInfo.currentDayOfWeek())
+    }
     val weekDays = DateFormatSymbols().weekdays.filter {
         it.isNotEmpty()
     }
-    val state = rememberLazyListState(initialFirstVisibleItemIndex = weekDays.indexOf(uiState))
+    val state = rememberLazyListState(initialFirstVisibleItemIndex = weekDays.indexOf(selectedDay))
     LazyRow(modifier = modifier, state = state) {
         items(items = weekDays, key = { day -> weekDays.indexOf(day) }) { day ->
             DateItem(
-                uiState = uiState,
+                selectedDay = selectedDay,
                 day = day,
                 onClicked = {
-                    dateListViewModel.onChanged(day)
+                    selectedDay = day
                     onDateClicked(day)
                 }
             )
@@ -47,11 +53,11 @@ fun DateListFragment(
 @Composable
 fun DateItem(
     modifier: Modifier = Modifier,
-    uiState: String,
+    selectedDay: String,
     day: String,
     onClicked: (String) -> Unit
 ) {
-    val containerColor = if (uiState.equals(day, ignoreCase = true))
+    val containerColor = if (selectedDay.equals(day, ignoreCase = true))
         Color.White
     else
         Color.LightGray
@@ -79,7 +85,7 @@ fun DateItem(
 @Composable
 fun PreviewDateItem() {
     Surface {
-        DateItem(uiState = "Monday", day = "Monday", onClicked = {})
+        DateItem(selectedDay = "Monday", day = "Monday", onClicked = {})
     }
 }
 

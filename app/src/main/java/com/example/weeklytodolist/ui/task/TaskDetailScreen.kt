@@ -40,12 +40,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
 import com.example.weeklytodolist.model.utils.getDate
-import com.example.weeklytodolist.ui.ViewModelProvider
-import com.example.weeklytodolist.ui.navigation.NavigationDestination
+import com.example.weeklytodolist.navigation.NavigationDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -62,7 +61,7 @@ fun TaskDetailScreen(
     modifier: Modifier = Modifier,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     scope: CoroutineScope,
-    taskDetailsViewModel: TaskDetailViewModel = viewModel(factory = ViewModelProvider.Factory),
+    taskDetailsViewModel: TaskDetailViewModel = hiltViewModel(),
     navigateBack: () -> Unit
 ) {
     Log.d("TaskDetail:", "Triggered")
@@ -256,7 +255,6 @@ fun PreviewTaskDetailBody() {
     TaskDetailBody(
         currentTask = Task(
             name = "Test",
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         ),
         contentPadding = PaddingValues(0.dp),
         onChecked = {}

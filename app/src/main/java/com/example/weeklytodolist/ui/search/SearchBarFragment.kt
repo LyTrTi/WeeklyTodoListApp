@@ -1,6 +1,5 @@
 package com.example.weeklytodolist.ui.search
 
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
@@ -26,17 +25,16 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weeklytodolist.R
 import com.example.weeklytodolist.model.Task
-import com.example.weeklytodolist.ui.ViewModelProvider
-import com.example.weeklytodolist.ui.task.TaskListFragment
+import com.example.weeklytodolist.ui.home.fragment.TaskListFragment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBarFragment(
     modifier: Modifier = Modifier,
-    searchScreenViewModel: SearchScreenViewModel = viewModel(factory = ViewModelProvider.Factory),
+    searchScreenViewModel: SearchScreenViewModel = hiltViewModel(),
     onCardClicked: (Task) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }

@@ -6,9 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weeklytodolist.data.TaskRepository
-import com.example.weeklytodolist.data.UserPreferencesRepository
+import com.example.weeklytodolist.domain.TaskRepository
+import com.example.weeklytodolist.data.userPreferences.UserPreferencesRepository
 import com.example.weeklytodolist.model.Task
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
+import javax.inject.Named
 
 enum class TypeList {
     Suggestions, Result, Recent
@@ -28,12 +31,9 @@ data class SearchState(
     var searchValue: String = ""
 )
 
-//TODO: TypeList Recent: take it from data store -> String
-//TODO: TypeList Suggestion: take it from database with search value -> String
-//TODO: TypeList Result: take it from database -> task
-
-class SearchScreenViewModel(
-    private val taskRepository: TaskRepository,
+@HiltViewModel
+class SearchScreenViewModel @Inject constructor(
+    @Named("firestoreTaskRepository") private val taskRepository: TaskRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     private var _recentSearches: StateFlow<List<String>> =
@@ -70,7 +70,6 @@ class SearchScreenViewModel(
     }
 
     fun onClearing() {
-        //TODO: DataStore -> toShow recent searches
         searchUiState = searchUiState.copy(
             type = TypeList.Recent,
             toShow = _recentSearches.value,

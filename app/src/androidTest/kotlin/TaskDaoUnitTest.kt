@@ -4,11 +4,10 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.example.weeklytodolist.data.TaskDao
-import com.example.weeklytodolist.data.TaskDatabase
+import com.example.weeklytodolist.data.localData.TaskDao
+import com.example.weeklytodolist.data.localData.TaskDatabase
 import com.example.weeklytodolist.model.Task
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals

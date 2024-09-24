@@ -12,9 +12,10 @@ import com.example.weeklytodolist.model.utils.DateTimeConverter
 data class Task (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val userId: String = "",
     val name: String  = "",
     var done: Boolean = false,
     val archive: Boolean = false,
     val description: String = "",
     val dateTime: String = DateFormatInfo.currentDateTime(),
-): Any()
+)

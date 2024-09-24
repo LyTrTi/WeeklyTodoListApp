@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.weeklytodolist.ui.navigation.ScreenNavHost
+import com.example.weeklytodolist.navigation.ScreenNavHost
 
 @Composable
 fun WeeklyTodoApp() {
