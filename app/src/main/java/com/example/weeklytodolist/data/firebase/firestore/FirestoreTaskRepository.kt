@@ -27,9 +27,12 @@ class FirestoreTaskRepository(
             if (snapshot != null) {
                 val tasks = snapshot.documents.mapNotNull {
                     it.toObject(Task::class.java)
+                }.filter {
+                    it.userId == _currentUser?.uid
                 }
                 trySend(tasks)
             }
+
         }
 
         awaitClose { subscription.remove() }
@@ -69,10 +72,12 @@ class FirestoreTaskRepository(
             }
 
             if (snapshot != null) {
-                val task = snapshot.documents.firstOrNull {
-                    it.toObject(Task::class.java)?.id == taskId
-                }?.toObject(Task::class.java)
-                trySend(task ?: Task())
+                _currentUser?.let { user ->
+                    val task = snapshot.documents.firstOrNull {
+                        (it.toObject(Task::class.java)?.id == taskId) && (it.toObject(Task::class.java)?.userId == user.uid)
+                    }?.toObject(Task::class.java)
+                    trySend(task ?: Task())
+                }
             }
         }
 
