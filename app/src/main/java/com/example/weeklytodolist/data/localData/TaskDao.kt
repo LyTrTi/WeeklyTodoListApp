@@ -1,7 +1,6 @@
-package com.example.weeklytodolist.data
+package com.example.weeklytodolist.data.localData
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.weeklytodolist.model.Task

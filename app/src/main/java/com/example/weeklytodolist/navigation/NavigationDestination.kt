@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.ui.navigation
+package com.example.weeklytodolist.navigation
 
 interface NavigationDestination {
     val route: String

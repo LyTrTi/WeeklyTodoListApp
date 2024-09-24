@@ -1,4 +1,4 @@
-package com.example.weeklytodolist.data
+package com.example.weeklytodolist.data.localData
 
 import android.content.Context
 import android.util.Log
